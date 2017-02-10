@@ -14,13 +14,13 @@ by @nerdammer._
 # Usage
 
 ## SBT  
-`libraryDependencies += "org.hathitrust.htrc" %% "spark-utils" % "1.0.1"`
+`libraryDependencies += "org.hathitrust.htrc" %% "spark-utils" % "1.0.2"`
 
 ## Maven
 ```
 <dependency>
     <groupId>org.hathitrust.htrc</groupId>
     <artifactId>spark-utils_2.11</artifactId>
-    <version>1.0.1</version>
+    <version>1.0.2</version>
 </dependency>
 ```
