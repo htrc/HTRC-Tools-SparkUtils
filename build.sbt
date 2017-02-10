@@ -44,7 +44,7 @@ lazy val commonSettings = Seq(
 lazy val `spark-utils` = (project in file(".")).
   enablePlugins(GitVersioning, GitBranchPrompt).
   settings(commonSettings: _*).
-  settings(spark_dev("2.1.0"): _*).
+  settings(spark("2.1.0"): _*).
   settings(
     name := "spark-utils",
     description := "Suite of utility functions for helping build Apache Spark applications",
