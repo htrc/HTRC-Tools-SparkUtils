@@ -72,9 +72,9 @@ class ErrorAccumulator[T, V](f: T => V)
   def saveErrors(path: Path, exceptionFormatter: Throwable => String = ExceptionUtils.getStackTrace)
                 (implicit codec: Codec = Codec.UTF8): Unit = {
     val fileSystem = FileSystem.get(sc.hadoopConfiguration)
-    using(fileSystem.create(path, true)) { stream =>
-      val out = new BufferedWriter(new OutputStreamWriter(stream, codec.charSet))
-      out.write(toString(exceptionFormatter))
+    using(
+      new BufferedWriter(new OutputStreamWriter(fileSystem.create(path, true), codec.charSet))) {
+      out => out.write(toString(exceptionFormatter))
     }
   }
 
