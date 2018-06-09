@@ -13,7 +13,8 @@ import scala.util.{Failure, Success, Try}
   */
 object RddExtensions {
 
-  implicit class RddWithTryFunctions[T: ClassTag](val rdd: RDD[T]) extends AnyVal {
+  @SuppressWarnings(Array("org.wartremover.warts.Null"))
+  implicit class RddWithTryFunctions[T: ClassTag](rdd: RDD[T]) {
     /**
       * Tries to map every element of the RDD using the supplied map function.
       * Exceptions encountered during the application of the map function are paired with their
@@ -46,7 +47,6 @@ object RddExtensions {
       * @tparam V The key type that will be paired with the error and stored in the accumulator
       * @return The RDD containing the successfully mapped elements
       */
-    @SuppressWarnings(Array("org.wartremover.warts.Null"))
     def mapIgnoreErrors[U: ClassTag, V: ClassTag](f: T => U): RDD[U] = tryMap[U, V](f)(acc = null)
 
     /**
@@ -82,9 +82,37 @@ object RddExtensions {
       * @tparam V The key type that will be paired with the error and stored in the accumulator
       * @return The RDD containing the successfully mapped elements
       */
-    @SuppressWarnings(Array("org.wartremover.warts.Null"))
     def flatMapIgnoreErrors[U: ClassTag, V: ClassTag](f: T => TraversableOnce[U]): RDD[U] =
       tryFlatMap[U, V](f)(acc = null)
+
+    /**
+      * Tries to invoke the given function on every element of this RDD.
+      * Exceptions encountered during the application of the function are paired with their
+      * related elements and are added to the supplied error accumulator, enabling their later
+      * retrieval on the driver.
+      *
+      * @param f The function to apply
+      * @param acc The error accumulator (or null if errors should be silently dropped)
+      * @tparam U The key type that will be paired with the error and stored in the accumulator
+      */
+    def tryForEach[U: ClassTag](f: T => Unit)(acc: ErrorAccumulator[T, U]): Unit = {
+      rdd.foreach(e => Try(f(e)) match {
+        case Success(_) =>
+        case Failure(t) =>
+          if (acc != null) {
+            acc.add(e, t)
+          }
+      })
+    }
+
+    /**
+      * Tries to invoke the given function on every element of this RDD.
+      * Exceptions encountered during the application of the function are silently ignored.
+      *
+      * @param f The function to apply
+      * @tparam U The key type that will be paired with the error and stored in the accumulator
+      */
+    def forEachIgnoreErrors[U: ClassTag](f: T => Unit): Unit = tryForEach[U](f)(acc = null)
   }
 
 }
