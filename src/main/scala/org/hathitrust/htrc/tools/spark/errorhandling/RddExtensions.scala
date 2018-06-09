@@ -13,7 +13,7 @@ import scala.util.{Failure, Success, Try}
   */
 object RddExtensions {
 
-  implicit class RddWithTryFunctions[T: ClassTag](rdd: RDD[T]) {
+  implicit class RddWithTryFunctions[T: ClassTag](val rdd: RDD[T]) extends AnyVal {
     /**
       * Tries to map every element of the RDD using the supplied map function.
       * Exceptions encountered during the application of the map function are paired with their
