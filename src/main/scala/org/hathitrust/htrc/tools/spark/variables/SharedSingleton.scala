@@ -18,6 +18,7 @@ class SharedSingleton[T: ClassTag](constructor: => T) extends AnyRef with Serial
 
   protected val uuid: String = UUID.randomUUID().toString
 
+  @SuppressWarnings(Array("org.wartremover.warts.AsInstanceOf"))
   @transient private lazy val instance: T =
     singletonPool.getOrElseUpdate(uuid, constructor).asInstanceOf[T]
 

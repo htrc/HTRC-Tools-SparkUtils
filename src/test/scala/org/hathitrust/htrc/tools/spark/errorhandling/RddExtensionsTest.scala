@@ -10,27 +10,19 @@ import org.scalatest.Matchers
   * @author Nicola Ferraro
   * @author Boris Capitanu
   */
+@SuppressWarnings(Array("org.wartremover.warts.Throw"))
 class RddExtensionsTest extends SparkTestBase with Matchers {
 
-  "Ignoring map and flatMap errors" should "work as expected in the normal case" in {
-    val sum = sc.parallelize(1 to 10)
-      .mapIgnoreErrors(i => i + 1)
-      .flatMapIgnoreErrors(i => Some(i - 1))
-      .reduce(_ + _)
-
-    assert(sum == 55)
-  }
-
-  it should "ignore errors when they happen" in {
+  "mapIgnoreErrors and flatMapIgnoreErrors" should  "silently drop errors" in {
     val sum = sc.parallelize(1 to 10)
       .mapIgnoreErrors(i => if (i % 2 == 0) throw new Exception(s"$i is even") else i)
       .flatMapIgnoreErrors(i => if (i % 3 == 0) throw new Exception(s"$i is div by 3") else Some(i))
       .reduce(_ + _)
 
-    assert(sum == 13)
+    sum should be (13)
   }
 
-  "Using tryMap and tryFlatMap" should "accumulate errors correctly" in {
+  "tryMap and tryFlatMap" should "correctly accumulate errors" in {
     val acc = new ErrorAccumulator[Int, Int](identity)(sc)
 
     val sum = sc.parallelize(1 to 12)
@@ -49,10 +41,36 @@ class RddExtensionsTest extends SparkTestBase with Matchers {
       .reduce(_ + _)
 
     // only 6 and 12 are ok
-    assert(sum == 18)
-    assert(acc.errors.size == 10)
-    assert(acc.errors.map { case (_, e) => e }.count(_.getMessage == "A") == 6)
-    assert(acc.errors.map { case (_, e) => e }.count(_.getMessage == "B") == 4)
+    sum should be (18)
+    acc.errors should have size 10
+    acc.errors.map { case (_, e) => e }.count(_.getMessage == "A") should be (6)
+    acc.errors.map { case (_, e) => e }.count(_.getMessage == "B") should be (4)
+  }
+
+  "forEachIgnoreErrors" should "silently drop errors" in {
+    val acc = sc.longAccumulator
+    sc.parallelize(1 to 10)
+      .forEachIgnoreErrors {
+        case n if n % 3 == 0 =>
+          throw new IllegalArgumentException(n.toString)
+        case n => acc.add(n)
+      }
+
+    acc.value should be (37)
+  }
+
+  "tryForEach" should "correctly accumulate errors" in {
+    val acc = new ErrorAccumulator[Int, Int](identity)(sc)
+
+    sc.parallelize(1 to 10)
+      .tryForEach {
+        case n if n % 3 == 0 =>
+          throw new Exception(n.toString)
+        case _ =>
+      }(acc)
+
+    acc.errors should have size 3
+    acc.errors.map { case (_, e) => e.getMessage.toInt } should contain theSameElementsAs List(3, 6, 9)
   }
 
   "Multiple accumulators" can "be defined" in {
@@ -75,13 +93,13 @@ class RddExtensionsTest extends SparkTestBase with Matchers {
       .reduce(_ + _)
 
     // only 6 and 12 are ok
-    assert(sum == 18)
-    assert(acc1.nonEmpty)
-    assert(acc2.nonEmpty)
-    assert(acc1.errors.size == 6)
-    assert(acc2.errors.size == 4)
-    assert(acc1.errors.map { case (_, e) => e }.forall(_.getMessage == "A"))
-    assert(acc2.errors.map { case (_, e) => e }.forall(_.getMessage == "B"))
+    sum should be (18)
+    acc1 should not be empty
+    acc2 should not be empty
+    acc1.errors should have size 6
+    acc2.errors should have size 4
+    acc1.errors.map { case (_, e) => e }.count(_.getMessage == "A") should be (6)
+    acc2.errors.map { case (_, e) => e }.count(_.getMessage == "B") should be (4)
   }
 
 }

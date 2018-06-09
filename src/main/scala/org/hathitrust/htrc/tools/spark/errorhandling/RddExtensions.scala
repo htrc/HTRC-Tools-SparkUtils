@@ -13,6 +13,7 @@ import scala.util.{Failure, Success, Try}
   */
 object RddExtensions {
 
+  @SuppressWarnings(Array("org.wartremover.warts.Null"))
   implicit class RddWithTryFunctions[T: ClassTag](rdd: RDD[T]) {
     /**
       * Tries to map every element of the RDD using the supplied map function.
@@ -83,6 +84,35 @@ object RddExtensions {
       */
     def flatMapIgnoreErrors[U: ClassTag, V: ClassTag](f: T => TraversableOnce[U]): RDD[U] =
       tryFlatMap[U, V](f)(acc = null)
+
+    /**
+      * Tries to invoke the given function on every element of this RDD.
+      * Exceptions encountered during the application of the function are paired with their
+      * related elements and are added to the supplied error accumulator, enabling their later
+      * retrieval on the driver.
+      *
+      * @param f The function to apply
+      * @param acc The error accumulator (or null if errors should be silently dropped)
+      * @tparam U The key type that will be paired with the error and stored in the accumulator
+      */
+    def tryForEach[U: ClassTag](f: T => Unit)(acc: ErrorAccumulator[T, U]): Unit = {
+      rdd.foreach(e => Try(f(e)) match {
+        case Success(_) =>
+        case Failure(t) =>
+          if (acc != null) {
+            acc.add(e, t)
+          }
+      })
+    }
+
+    /**
+      * Tries to invoke the given function on every element of this RDD.
+      * Exceptions encountered during the application of the function are silently ignored.
+      *
+      * @param f The function to apply
+      * @tparam U The key type that will be paired with the error and stored in the accumulator
+      */
+    def forEachIgnoreErrors[U: ClassTag](f: T => Unit): Unit = tryForEach[U](f)(acc = null)
   }
 
 }
