@@ -10,6 +10,7 @@ class RDDMultipleTextOutputFormat extends MultipleTextOutputFormat[Any, Any] {
   override def generateActualKey(key: Any, value: Any): Any =
     NullWritable.get()
 
+  @SuppressWarnings(Array("org.wartremover.warts.AsInstanceOf"))
   override def generateFileNameForKeyValue(key: Any, value: Any, name: String): String =
     key.asInstanceOf[String]
 }

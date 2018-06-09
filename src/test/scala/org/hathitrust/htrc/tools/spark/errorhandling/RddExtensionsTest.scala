@@ -10,6 +10,7 @@ import org.scalatest.Matchers
   * @author Nicola Ferraro
   * @author Boris Capitanu
   */
+@SuppressWarnings(Array("org.wartremover.warts.Throw"))
 class RddExtensionsTest extends SparkTestBase with Matchers {
 
   "Ignoring map and flatMap errors" should "work as expected in the normal case" in {

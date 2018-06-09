@@ -46,6 +46,7 @@ object RddExtensions {
       * @tparam V The key type that will be paired with the error and stored in the accumulator
       * @return The RDD containing the successfully mapped elements
       */
+    @SuppressWarnings(Array("org.wartremover.warts.Null"))
     def mapIgnoreErrors[U: ClassTag, V: ClassTag](f: T => U): RDD[U] = tryMap[U, V](f)(acc = null)
 
     /**
@@ -81,6 +82,7 @@ object RddExtensions {
       * @tparam V The key type that will be paired with the error and stored in the accumulator
       * @return The RDD containing the successfully mapped elements
       */
+    @SuppressWarnings(Array("org.wartremover.warts.Null"))
     def flatMapIgnoreErrors[U: ClassTag, V: ClassTag](f: T => TraversableOnce[U]): RDD[U] =
       tryFlatMap[U, V](f)(acc = null)
   }

@@ -10,6 +10,7 @@ import org.scalatest.{BeforeAndAfter, FlatSpec}
   */
 class SparkTestBase extends FlatSpec with BeforeAndAfter {
 
+  @SuppressWarnings(Array("org.wartremover.warts.Var", "org.wartremover.warts.Null"))
   var sc: SparkContext = _
 
   before {
