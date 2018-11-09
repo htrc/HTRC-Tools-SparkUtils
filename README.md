@@ -8,19 +8,19 @@ by @nerdammer._
 
 # Build
 * To generate a package that can be referenced from other projects:  
-  `sbt package`  
-  then find the result in `target/scala-2.11/` (or similar) folder.
+  `sbt "+package"`  
+  This will cross-build for Scala 2.12.x and 2.11.x; find the result in `target/scala-2.12/` (or similar) folder.
 
 # Usage
 
 ## SBT  
-`libraryDependencies += "org.hathitrust.htrc" %% "spark-utils" % "1.1.0"`
+`libraryDependencies += "org.hathitrust.htrc" %% "spark-utils" % "1.2.0"`
 
 ## Maven
 ```
 <dependency>
     <groupId>org.hathitrust.htrc</groupId>
-    <artifactId>spark-utils_2.11</artifactId>
-    <version>1.1.0</version>
+    <artifactId>spark-utils_2.12</artifactId>
+    <version>1.2.0</version>
 </dependency>
 ```

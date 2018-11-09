@@ -73,7 +73,7 @@ class VariablesTest extends SparkTestBase with Matchers {
       new NonSerializable
     }
 
-    for (i <- 1 to 5) {
+    for (_ <- 1 to 5) {
       val clonedService = SerializationUtils.clone(service)
       sc.parallelize(1 to 10)
         .map(_.toString)
