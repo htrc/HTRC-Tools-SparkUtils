@@ -70,5 +70,6 @@ lazy val `spark-utils` = (project in file(".")).
       "-XX:MaxPermSize=2048M", "-XX:+CMSClassUnloadingEnabled"
     ),
     crossScalaVersions := Seq("2.12.7", "2.11.12"),
-    parallelExecution in Test := false
+    parallelExecution in Test := false,
+    fork := true
   )
