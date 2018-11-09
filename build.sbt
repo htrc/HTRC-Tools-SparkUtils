@@ -9,7 +9,7 @@ lazy val commonSettings = Seq(
   organization := "org.hathitrust.htrc",
   organizationName := "HathiTrust Research Center",
   organizationHomepage := Some(url("https://www.hathitrust.org/htrc")),
-  scalaVersion := "2.11.12",
+  scalaVersion := "2.12.7",
   scalacOptions ++= Seq(
     "-feature",
     "-deprecation",
@@ -56,7 +56,7 @@ lazy val commonSettings = Seq(
 lazy val `spark-utils` = (project in file(".")).
   enablePlugins(GitVersioning, GitBranchPrompt).
   settings(commonSettings).
-  settings(spark("2.3.0")).
+  settings(spark("2.4.0")).
   settings(
     name := "spark-utils",
     description := "Suite of utility functions for helping build Apache Spark applications",
@@ -69,5 +69,6 @@ lazy val `spark-utils` = (project in file(".")).
       "-Xms512M", "-Xmx2048M",
       "-XX:MaxPermSize=2048M", "-XX:+CMSClassUnloadingEnabled"
     ),
+    crossScalaVersions := Seq("2.12.7", "2.11.12"),
     parallelExecution in Test := false
   )

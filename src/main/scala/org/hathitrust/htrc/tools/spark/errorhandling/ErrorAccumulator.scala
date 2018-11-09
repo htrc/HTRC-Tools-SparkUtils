@@ -8,7 +8,7 @@ import org.apache.spark.SparkContext
 import org.apache.spark.util.CollectionAccumulator
 import org.hathitrust.htrc.tools.spark.Arm._
 
-import scala.collection.JavaConversions._
+import scala.collection.JavaConverters._
 import scala.io.Codec
 
 /**
@@ -60,7 +60,7 @@ class ErrorAccumulator[T, V](f: T => V)
     *
     * @return The sequence of error pairs
     */
-  def errors: Seq[(V, Throwable)] = acc.value
+  def errors: Seq[(V, Throwable)] = acc.value.asScala
 
   /**
     * Saves the errors in this accumulator to a tab-separated (TSV) file.
