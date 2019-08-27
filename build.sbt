@@ -1,4 +1,3 @@
-import com.typesafe.sbt.{GitBranchPrompt, GitVersioning}
 import Dependencies._
 
 showCurrentGitBranch
@@ -9,16 +8,17 @@ lazy val commonSettings = Seq(
   organization := "org.hathitrust.htrc",
   organizationName := "HathiTrust Research Center",
   organizationHomepage := Some(url("https://www.hathitrust.org/htrc")),
-  scalaVersion := "2.12.7",
+  scalaVersion := "2.12.8",
   scalacOptions ++= Seq(
     "-feature",
     "-deprecation",
     "-language:postfixOps",
     "-language:implicitConversions"
   ),
-  resolvers ++= Seq(
-    "I3 Repository" at "http://nexus.htrc.illinois.edu/content/groups/public",
-    Resolver.mavenLocal
+  externalResolvers := Seq(
+    Resolver.defaultLocal,
+    Resolver.mavenLocal,
+    "HTRC Nexus Repository" at "http://nexus.htrc.illinois.edu/content/groups/public",
   ),
   packageOptions in (Compile, packageBin) += Package.ManifestAttributes(
     ("Git-Sha", git.gitHeadCommit.value.getOrElse("N/A")),
@@ -34,30 +34,22 @@ lazy val commonSettings = Seq(
     else
       Some("HTRC Releases Repository"  at nexus + "content/repositories/releases")
   },
-  credentials += Credentials(Path.userHome / ".ivy2" / ".credentials" / "nexus.htrc.illinois.edu"),
-  packageOptions in (Compile, packageBin) += Package.ManifestAttributes(
-    ("Git-Sha", git.gitHeadCommit.value.getOrElse("N/A")),
-    ("Git-Branch", git.gitCurrentBranch.value),
-    ("Git-Version", git.gitDescribedVersion.value.getOrElse("N/A")),
-    ("Git-Dirty", git.gitUncommittedChanges.value.toString),
-    ("Build-Date", new java.util.Date().toString)
-  ),
+  // force to run 'test' before 'package' and 'publish' tasks
+  publish := (publish dependsOn Test / test).value,
+  Keys.`package` := (Compile / Keys.`package` dependsOn Test / test).value,
   wartremoverErrors ++= Warts.unsafe.diff(Seq(
     Wart.DefaultArguments,
     Wart.NonUnitStatements,
     Wart.Any,
     Wart.TryPartial
-  )),
-  // force to run 'test' before 'package' and 'publish' tasks
-  publish := (publish dependsOn Test / test).value,
-  Keys.`package` := (Compile / Keys.`package` dependsOn Test / test).value
+  ))
 )
 
-lazy val `spark-utils` = (project in file(".")).
-  enablePlugins(GitVersioning, GitBranchPrompt).
-  settings(commonSettings).
-  settings(spark("2.4.0")).
-  settings(
+lazy val `spark-utils` = (project in file("."))
+  .enablePlugins(GitVersioning, GitBranchPrompt)
+  .settings(commonSettings)
+  .settings(spark("2.4.0"))
+  .settings(
     name := "spark-utils",
     description := "Suite of utility functions for helping build Apache Spark applications",
     licenses += "Apache2" -> url("http://www.apache.org/licenses/LICENSE-2.0"),
@@ -69,7 +61,7 @@ lazy val `spark-utils` = (project in file(".")).
       "-Xms512M", "-Xmx2048M",
       "-XX:MaxPermSize=2048M", "-XX:+CMSClassUnloadingEnabled"
     ),
-    crossScalaVersions := Seq("2.12.7", "2.11.12"),
+    crossScalaVersions := Seq("2.12.8", "2.11.12"),
     parallelExecution in Test := false,
     fork := true
   )
