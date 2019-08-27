@@ -22,6 +22,16 @@ class RddExtensionsTest extends SparkTestBase with Matchers {
     sum should be (13)
   }
 
+  "mapValuesIgnoreErrors and flatMapValuesIgnoreErrors" should  "silently drop errors" in {
+    val sum = sc.parallelize(1 to 10).zipWithIndex().map(_.swap)
+      .mapValuesIgnoreErrors(i => if (i % 2 == 0) throw new Exception(s"$i is even") else i)
+      .flatMapValuesIgnoreErrors(i => if (i % 3 == 0) throw new Exception(s"$i is div by 3") else Some(i))
+      .map(_._2)
+      .reduce(_ + _)
+
+    sum should be (13)
+  }
+
   "tryMap and tryFlatMap" should "correctly accumulate errors" in {
     val acc = new ErrorAccumulator[Int, Int](identity)(sc)
 
@@ -38,6 +48,32 @@ class RddExtensionsTest extends SparkTestBase with Matchers {
         else
           throw new Exception("B")
       })(acc)
+      .reduce(_ + _)
+
+    // only 6 and 12 are ok
+    sum should be (18)
+    acc.errors should have size 10
+    acc.errors.map { case (_, e) => e }.count(_.getMessage == "A") should be (6)
+    acc.errors.map { case (_, e) => e }.count(_.getMessage == "B") should be (4)
+  }
+
+  "tryMapValues and tryFlatMapValues" should "correctly accumulate errors" in {
+    val acc = new ErrorAccumulator[(Long, Int), Int](_._2)(sc)
+
+    val sum = sc.parallelize(1 to 12).zipWithIndex().map(_.swap)
+      .tryMapValues(i => {
+        if (i % 2 == 0)
+          i
+        else
+          throw new RuntimeException("A")
+      })(acc)
+      .tryFlatMapValues(i => {
+        if (i % 3 == 0)
+          Some(i)
+        else
+          throw new Exception("B")
+      })(acc)
+      .map(_._2)
       .reduce(_ + _)
 
     // only 6 and 12 are ok
