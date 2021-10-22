@@ -2,7 +2,7 @@ package org.hathitrust.htrc.tools.spark.errorhandling
 
 import org.hathitrust.htrc.tools.spark.SparkTestBase
 import org.hathitrust.htrc.tools.spark.errorhandling.RddExtensions._
-import org.scalatest.Matchers
+import org.scalatest.matchers.should
 
 /**
   * Basic tests of the library.
@@ -11,7 +11,7 @@ import org.scalatest.Matchers
   * @author Boris Capitanu
   */
 @SuppressWarnings(Array("org.wartremover.warts.Throw"))
-class RddExtensionsTest extends SparkTestBase with Matchers {
+class RddExtensionsTest extends SparkTestBase with should.Matchers {
 
   "mapIgnoreErrors and flatMapIgnoreErrors" should  "silently drop errors" in {
     val sum = sc.parallelize(1 to 10)

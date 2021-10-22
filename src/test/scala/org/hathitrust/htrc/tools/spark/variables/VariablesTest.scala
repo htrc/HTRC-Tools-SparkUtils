@@ -2,7 +2,7 @@ package org.hathitrust.htrc.tools.spark.variables
 
 import org.apache.commons.lang3.SerializationUtils
 import org.hathitrust.htrc.tools.spark.SparkTestBase
-import org.scalatest.Matchers
+import org.scalatest.matchers.should
 
 import scala.util.Try
 
@@ -11,7 +11,7 @@ import scala.util.Try
   *
   * @author Nicola Ferraro
   */
-class VariablesTest extends SparkTestBase with Matchers {
+class VariablesTest extends SparkTestBase with should.Matchers {
 
   "test that some objects" can "not work alone" in {
     val service = new NonSerializable
