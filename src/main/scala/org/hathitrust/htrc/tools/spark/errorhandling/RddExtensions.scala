@@ -4,6 +4,7 @@ import org.apache.spark.rdd.RDD
 
 import scala.reflect.ClassTag
 import scala.util.{Failure, Success, Try}
+import scala.collection.compat.IterableOnce
 
 /**
   * Extensions that add simple error-handling operations to RDDs
@@ -61,7 +62,7 @@ object RddExtensions {
       * @tparam V The key type that will be paired with the error and stored in the accumulator
       * @return The RDD containing the successfully mapped elements
       */
-    def tryFlatMap[U: ClassTag, V](f: T => TraversableOnce[U])
+    def tryFlatMap[U: ClassTag, V](f: T => IterableOnce[U])
                                   (acc: ErrorAccumulator[T, V]): RDD[U] = {
       rdd.flatMap(e => Try(f(e)) match {
         case Success(result) => result
@@ -82,7 +83,7 @@ object RddExtensions {
       * @tparam V The key type that will be paired with the error and stored in the accumulator
       * @return The RDD containing the successfully mapped elements
       */
-    def flatMapIgnoreErrors[U: ClassTag, V](f: T => TraversableOnce[U]): RDD[U] =
+    def flatMapIgnoreErrors[U: ClassTag, V](f: T => IterableOnce[U]): RDD[U] =
       tryFlatMap[U, V](f)(acc = null)
 
     /**
@@ -164,10 +165,10 @@ object RddExtensions {
       * @tparam W The key type that will be paired with the error and stored in the accumulator
       * @return The PairRDD containing the successfully mapped elements
       */
-    def tryFlatMapValues[U: ClassTag, W](f: V => TraversableOnce[U])
+    def tryFlatMapValues[U: ClassTag, W](f: V => IterableOnce[U])
                                         (acc: ErrorAccumulator[(K, V), W]): RDD[(K, U)] = {
       rdd.flatMap { case (k, e) => Try(f(e)) match {
-        case Success(result) => result.map(k -> _)
+        case Success(result) => result.toIterator.map(k -> _)
         case Failure(t) =>
           if (acc != null) {
             acc.add(k -> e, t)
@@ -185,7 +186,7 @@ object RddExtensions {
       * @tparam W The key type that will be paired with the error and stored in the accumulator
       * @return The PairRDD containing the successfully mapped elements
       */
-    def flatMapValuesIgnoreErrors[U: ClassTag, W](f: V => TraversableOnce[U]): RDD[(K, U)] =
+    def flatMapValuesIgnoreErrors[U: ClassTag, W](f: V => IterableOnce[U]): RDD[(K, U)] =
       tryFlatMapValues[U, W](f)(acc = null)
   }
 }

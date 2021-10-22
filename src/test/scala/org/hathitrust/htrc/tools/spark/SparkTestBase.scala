@@ -1,14 +1,15 @@
 package org.hathitrust.htrc.tools.spark
 
 import org.apache.spark.{SparkConf, SparkContext}
-import org.scalatest.{BeforeAndAfter, FlatSpec}
+import org.scalatest.BeforeAndAfter
+import org.scalatest.flatspec.AnyFlatSpec
 
 /**
   * Base class for all Spark tests.
   *
   * @author Nicola Ferraro
   */
-class SparkTestBase extends FlatSpec with BeforeAndAfter {
+class SparkTestBase extends AnyFlatSpec with BeforeAndAfter {
 
   @SuppressWarnings(Array("org.wartremover.warts.Var", "org.wartremover.warts.Null"))
   var sc: SparkContext = _

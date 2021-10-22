@@ -1,15 +1,14 @@
 package org.hathitrust.htrc.tools.spark.errorhandling
 
-import java.io.{BufferedWriter, OutputStreamWriter}
-
 import org.apache.commons.lang3.exception.ExceptionUtils
 import org.apache.hadoop.fs.{FileSystem, Path}
 import org.apache.spark.SparkContext
 import org.apache.spark.util.CollectionAccumulator
-import org.hathitrust.htrc.tools.spark.Arm._
 
-import scala.collection.JavaConverters._
+import java.io.{BufferedWriter, OutputStreamWriter}
 import scala.io.Codec
+import scala.jdk.CollectionConverters._
+import scala.util.Using
 
 /**
   * Class used to accumulate errors generated during RDD manipulations
@@ -60,7 +59,7 @@ class ErrorAccumulator[T, V](f: T => V)
     *
     * @return The sequence of error pairs
     */
-  def errors: Seq[(V, Throwable)] = acc.value.asScala
+  def errors: collection.Seq[(V, Throwable)] = acc.value.asScala
 
   /**
     * Saves the errors in this accumulator to a tab-separated (TSV) file.
@@ -72,9 +71,8 @@ class ErrorAccumulator[T, V](f: T => V)
   def saveErrors(path: Path, exceptionFormatter: Throwable => String = ExceptionUtils.getStackTrace)
                 (implicit codec: Codec = Codec.UTF8): Unit = {
     val fileSystem = FileSystem.get(sc.hadoopConfiguration)
-    using(
-      new BufferedWriter(new OutputStreamWriter(fileSystem.create(path, true), codec.charSet))) {
-      out => out.write(toString(exceptionFormatter))
+    Using.resource(new BufferedWriter(new OutputStreamWriter(fileSystem.create(path, true), codec.charSet))) { out =>
+      out.write(toString(exceptionFormatter))
     }
   }
 
