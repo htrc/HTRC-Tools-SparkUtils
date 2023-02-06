@@ -1,0 +1,28 @@
+name: Publish to Nexus
+
+on:
+  release:
+    types: [published]
+
+permissions:
+  contents: read
+
+env:
+  PGP_PASSPHRASE: ${{ secrets.GH_ACTIONS_BOT_PGP_PASSPHRASE }}
+  HTRC_NEXUS_DRHTRC_PWD: ${{ secrets.HTRC_NEXUS_DRHTRC_PWD }}
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      - name: Set up Java
+        uses: actions/setup-java@v3
+        with:
+          java-version: '11'
+          distribution: 'temurin'
+          gpg-private-key: ${{ secrets.GH_ACTIONS_BOT_PGP_SECRET }}
+      - run: git fetch --tags --unshallow -f || true
+      - name: Publish ${{ github.ref }}
+        run: sbt "+publishSigned"
