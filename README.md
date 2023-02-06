@@ -1,3 +1,7 @@
+[![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/htrc/HTRC-Tools-SparkUtils/ci.yml?branch=develop)](https://github.com/htrc/HTRC-Tools-SparkUtils/actions/workflows/ci.yml)
+[![codecov](https://codecov.io/github/htrc/HTRC-Tools-SparkUtils/branch/develop/graph/badge.svg?token=EL908DMVWS)](https://codecov.io/github/htrc/HTRC-Tools-SparkUtils)
+[![GitHub release (latest SemVer including pre-releases)](https://img.shields.io/github/v/release/htrc/HTRC-Tools-SparkUtils?include_prereleases&sort=semver)](https://github.com/htrc/HTRC-Tools-SparkUtils/releases/latest)
+
 # HTRC-Tools-SparkUtils
 Library that adds useful error handling and non-serializable object management capabilities to
 Apache Spark applications.
@@ -16,13 +20,13 @@ by @nerdammer._
 # Usage
 
 ## SBT  
-`libraryDependencies += "org.hathitrust.htrc" %% "spark-utils" % "1.4"`
+`libraryDependencies += "org.hathitrust.htrc" %% "spark-utils" % VERSION`
 
 ## Maven
 ```
 <dependency>
     <groupId>org.hathitrust.htrc</groupId>
     <artifactId>spark-utils_2.13</artifactId>
-    <version>1.4</version>
+    <version>VERSION</version>
 </dependency>
 ```
