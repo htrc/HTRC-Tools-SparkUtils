@@ -1,5 +1,6 @@
 package org.hathitrust.htrc.tools.spark.errorhandling
 
+import com.typesafe.scalalogging.Logger
 import org.apache.commons.lang3.exception.ExceptionUtils
 import org.apache.hadoop.fs.{FileSystem, Path}
 import org.apache.spark.SparkContext
@@ -25,6 +26,7 @@ class ErrorAccumulator[T, V](f: T => V)
     * The backing Spark accumulator.
     */
   private val acc: CollectionAccumulator[(V, Throwable)] = sc.collectionAccumulator[(V, Throwable)]
+  private val logger = Logger(getClass.getName)
 
   /**
     * Adds a new error pair to the accumulator.
@@ -70,6 +72,9 @@ class ErrorAccumulator[T, V](f: T => V)
     */
   def saveErrors(path: Path, exceptionFormatter: Throwable => String = ExceptionUtils.getStackTrace)
                 (implicit codec: Codec = Codec.UTF8): Unit = {
+    logger.whenInfoEnabled {
+      logger.info(f"Saving ${errors.length}%,d errors to ${path}...")
+    }
     val fileSystem = FileSystem.get(sc.hadoopConfiguration)
     Using.resource(new BufferedWriter(new OutputStreamWriter(fileSystem.create(path, true), codec.charSet))) { out =>
       for ((elem, error) <- errors)
