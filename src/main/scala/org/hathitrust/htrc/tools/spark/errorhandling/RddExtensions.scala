@@ -168,7 +168,7 @@ object RddExtensions {
     def tryFlatMapValues[U: ClassTag, W](f: V => IterableOnce[U])
                                         (acc: ErrorAccumulator[(K, V), W]): RDD[(K, U)] = {
       rdd.flatMap { case (k, e) => Try(f(e)) match {
-        case Success(result) => result.toIterator.map(k -> _)
+        case Success(result) => result.iterator.map(k -> _)
         case Failure(t) =>
           if (acc != null) {
             acc.add(k -> e, t)
