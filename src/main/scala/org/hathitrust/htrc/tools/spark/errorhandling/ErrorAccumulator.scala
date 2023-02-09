@@ -72,29 +72,8 @@ class ErrorAccumulator[T, V](f: T => V)
                 (implicit codec: Codec = Codec.UTF8): Unit = {
     val fileSystem = FileSystem.get(sc.hadoopConfiguration)
     Using.resource(new BufferedWriter(new OutputStreamWriter(fileSystem.create(path, true), codec.charSet))) { out =>
-      out.write(toString(exceptionFormatter))
+      for ((elem, error) <- errors)
+        out.write(s"$elem\t${exceptionFormatter(error)}\n")
     }
   }
-
-  /**
-    * Returns the string representation of the error pairs in this accumulator.
-    *
-    * @param exceptionFormatter A formatter for converting Throwable to String
-    * @return The string representation of the error pairs in this accumulator
-    */
-  def toString(exceptionFormatter: Throwable => String): String = {
-    val sb = new StringBuilder
-    for ((elem, error) <- errors) {
-      sb.append(s"$elem\t${exceptionFormatter(error)}\n")
-    }
-
-    sb.toString()
-  }
-
-  /**
-    * Returns the string representation of the error pairs in this accumulator.
-    *
-    * @return The string representation of the error pairs in this accumulator
-    */
-  override def toString: String = toString(ExceptionUtils.getStackTrace)
 }
