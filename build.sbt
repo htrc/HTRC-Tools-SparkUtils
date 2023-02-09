@@ -79,6 +79,7 @@ lazy val `spark-utils` = (project in file("."))
     licenses += "Apache2" -> url("http://www.apache.org/licenses/LICENSE-2.0"),
     libraryDependencies ++= Seq(
       "org.scala-lang.modules"        %% "scala-collection-compat"  % "2.9.0",
+      "com.typesafe.scala-logging"    %% "scala-logging"            % "3.9.5",
       "org.scalacheck"                %% "scalacheck"               % "1.17.0"    % Test,
       "org.scalatest"                 %% "scalatest"                % "3.2.15"    % Test,
       "org.scalatestplus"             %% "scalacheck-1-15"          % "3.2.11.0"  % Test
