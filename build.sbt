@@ -6,7 +6,7 @@ inThisBuild(Seq(
   organization := "org.hathitrust.htrc",
   organizationName := "HathiTrust Research Center",
   organizationHomepage := Some(url("https://www.hathitrust.org/htrc")),
-  scalaVersion := "2.13.10",
+  scalaVersion := "2.13.11",
   scalacOptions ++= Seq(
     "-feature",
     "-deprecation",
@@ -27,7 +27,7 @@ inThisBuild(Seq(
   ),
   dynverSonatypeSnapshots := true,
   versionScheme := Some("semver-spec"),
-  crossScalaVersions := Seq("2.13.10", "2.12.17")
+  crossScalaVersions := Seq("2.13.11", "2.12.18")
 ))
 
 lazy val publishSettings = Seq(
@@ -55,7 +55,7 @@ lazy val ammoniteSettings = Seq(
       val version = scalaBinaryVersion.value match {
         case "2.10" => "1.0.3"
         case "2.11" => "1.6.7"
-        case _ ⇒  "2.5.6"
+        case _ ⇒  "2.5.9"
       }
       "com.lihaoyi" % "ammonite" % version % Test cross CrossVersion.full
     },
@@ -72,16 +72,16 @@ lazy val `spark-utils` = (project in file("."))
   .enablePlugins(GitVersioning, GitBranchPrompt)
   .settings(publishSettings)
   .settings(ammoniteSettings)
-  .settings(spark("3.3.1"))
+  .settings(spark("3.4.1"))
   .settings(
     name := "spark-utils",
     description := "Suite of utility functions for helping build Apache Spark applications",
     licenses += "Apache2" -> url("http://www.apache.org/licenses/LICENSE-2.0"),
     libraryDependencies ++= Seq(
-      "org.scala-lang.modules"        %% "scala-collection-compat"  % "2.9.0",
+      "org.scala-lang.modules"        %% "scala-collection-compat"  % "2.11.0",
       "com.typesafe.scala-logging"    %% "scala-logging"            % "3.9.5",
       "org.scalacheck"                %% "scalacheck"               % "1.17.0"    % Test,
-      "org.scalatest"                 %% "scalatest"                % "3.2.15"    % Test,
+      "org.scalatest"                 %% "scalatest"                % "3.2.16"    % Test,
       "org.scalatestplus"             %% "scalacheck-1-15"          % "3.2.11.0"  % Test
     ),
     javaOptions ++= Seq("-Xms8G", "-Xmx8G"),
