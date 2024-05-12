@@ -1,4 +1,4 @@
-[![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/htrc/HTRC-Tools-SparkUtils/ci.yml?branch=main)](https://github.com/htrc/HTRC-Tools-SparkUtils/actions/workflows/ci.yml)
+[![Scala CI](https://github.com/htrc/HTRC-Tools-SparkUtils/actions/workflows/ci.yml/badge.svg)](https://github.com/htrc/HTRC-Tools-SparkUtils/actions/workflows/ci.yml)
 [![codecov](https://codecov.io/github/htrc/HTRC-Tools-SparkUtils/graph/badge.svg?token=O71L5M1ORN)](https://codecov.io/github/htrc/HTRC-Tools-SparkUtils)
 [![GitHub release (latest SemVer including pre-releases)](https://img.shields.io/github/v/release/htrc/HTRC-Tools-SparkUtils?include_prereleases&sort=semver)](https://github.com/htrc/HTRC-Tools-SparkUtils/releases/latest)
 
