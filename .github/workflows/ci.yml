@@ -23,7 +23,7 @@ jobs:
           distribution: 'temurin'
           cache: 'sbt'
       - name: Run tests with coverage
-        run: sbt -J--add-opens=java.base/sun.security.action=ALL-UNNAMED -J--add-exports=java.base/sun.nio.ch=ALL-UNNAMED -Dio.netty.tryReflectionSetAccessible=true -mem 4000 coverage "+test" coverageReport
+        run: sbt -mem 4000 coverage "+test" coverageReport
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v4
         with:
